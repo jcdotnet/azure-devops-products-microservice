@@ -82,8 +82,7 @@ stages:
         solution: '**/*.slnx'
         msbuildArchitecture: 'x64'
         platform: 'Any CPU'
-        configuration: 'Release'
-        msbuildArguments: '/p:Configuration=Release'
+        configuration: 'Debug'
     
     - task: VSTest@3
       displayName: Test Products Service
@@ -91,6 +90,8 @@ stages:
         testSelector: 'testAssemblies'
         testAssemblyVer2: |
           **\ProductsService.Test.dll
+          !**\*TestAdapter.dll
+          !**\obj\**
         searchFolder: '$(System.DefaultWorkingDirectory)'
         runTestsInIsolation: true
         codeCoverageEnabled: true
