@@ -28,7 +28,7 @@ variables:
   - name: dockerfilePath
     value: '$(Build.SourcesDirectory)/eCommerce.API/Dockerfile'
   - name: tag
-    value: $(Build.BuildId)'
+    value: '$(Build.BuildId)'
 
   # Agent VM image name
   - name: vmImageName
