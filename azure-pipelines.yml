@@ -3,28 +3,43 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- main
+- dev # branch where the pipeline should be triggered (changed from main to dev)
+# we can add more than one branch
 
 resources:
-- repo: self
+- repo: self # working repository where the pipeline yaml file is present
 
 variables:
   # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: 'aa369cc9-2546-466a-b0ea-1dfe67b659c5'
-  imageRepository: 'productsmicroservice'
-  containerRegistry: 'jcdotnetecommerceregistry.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/eCommerce.API/Dockerfile'
-  tag: '$(Build.BuildId)'
+  # dockerRegistryServiceConnection: 'aa369cc9-2546-466a-b0ea-1dfe67b659c5'
+  # imageRepository: 'productsmicroservice'
+  # containerRegistry: 'jcdotnetecommerceregistry.azurecr.io'
+  # dockerfilePath: '$(Build.SourcesDirectory)/eCommerce.API/Dockerfile'
+  # tag: '$(Build.BuildId)'
+  # changing to name/value notation (both are correct)
+  
+  # Service connection that acts as bridge between the pipeline and the ACR
+  - name: dockerRegistryServiceConnection
+    value: 'aa369cc9-2546-466a-b0ea-1dfe67b659c5'
+  - name: imageRepository
+    value: 'products-microservice'
+  - name: containerRegistry
+    value: 'jcdotnetecommerceregistry.azurecr.io'
+  - name: dockerfilePath
+    value: '$(Build.SourcesDirectory)/eCommerce.API/Dockerfile'
+  - name: tag
+    value: $(Build.BuildId)'
 
   # Agent VM image name
-  vmImageName: 'ubuntu-latest'
+  - name: vmImageName
+    value: 'ubuntu-latest'
 
 stages:
 - stage: Build
   displayName: Build and push stage
   jobs:
   - job: Build
-    displayName: Build
+    displayName: Docker Build
     pool:
       vmImage: $(vmImageName)
     steps:
