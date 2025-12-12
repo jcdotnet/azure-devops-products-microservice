@@ -2,4 +2,5 @@
   <Project Path="BusinessLogicLayer/BusinessLogicLayer.csproj" />
   <Project Path="DataAccessLayer/DataAccessLayer.csproj" />
   <Project Path="eCommerce.API/eCommerce.API.csproj" />
+  <Project Path="ProductsService.Test/ProductsService.Test.csproj" Id="332c22b9-496b-409b-9d25-ace10b71b7bb" />
 </Solution>
