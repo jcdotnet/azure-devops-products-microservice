@@ -3,8 +3,15 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/docker
 
 trigger:
-- dev # branch where the pipeline should be triggered (changed from main to dev)
-# we can add more than one branch
+#- dev # branch where the pipeline should be triggered (changed from main to dev)
+# we can add more than one branch:
+  branches:
+    include:
+      - dev
+      - qa
+      - uat
+      - staging
+      - prod
 
 resources:
 - repo: self # working repository where the pipeline yaml file is present
@@ -31,7 +38,7 @@ variables:
     value: '$(Build.BuildId)'
 
   # Agent VM image name
-  - name: vmImageName
+  - name: linuxImageName
     value: 'ubuntu-latest'
   - name: windowsImageName
     value: 'windows-latest'
@@ -41,10 +48,24 @@ variables:
     value: 'eCommerce-aks-cluster' 
   - name: aksServiceConnectionName
     value: 'dev-ecommerce-aks-cluster-dev-1765713468254'
-  - name: deploymentFile
-    value: '$(Build.SourcesDirectory)/k8s/deployment.yaml'
+  - name: qaAksServiceConnectionName
+    value: 'qa-ecommerce-aks-cluster-qa-1765713656030'
+  - name: uatAksServiceConnectionName
+    value: 'uat-ecommerce-aks-cluster-uat-1765713748187'
+  - name: stagingAksServiceConnectionName
+    value: 'staging-ecommerce-aks-cluster-staging-1765713856428'
+  - name: prodAksServiceConnectionName
+    value: 'prod-ecommerce-aks-cluster-prod-1765713932420'
   - name: kubernetesNamespace
     value: 'dev'
+  - name: qaKubernetesNamespace
+    value: 'qa'
+  - name: uatKubernetesNamespace
+    value: 'uat'
+  - name: stagingKubernetesNamespace
+    value: 'staging'
+  - name: prodKubernetesNamespace
+    value: 'prod'
 
 stages:
 - stage: Build
@@ -53,7 +74,7 @@ stages:
   - job: Build
     displayName: Docker Build
     pool:
-      vmImage: $(vmImageName)
+      vmImage: $(linuxImageName)
     steps:
     - task: Docker@2
       displayName: Build and push an image to container registry
@@ -123,12 +144,12 @@ stages:
         
             - script: |
                 echo "Listing contents of k8s"
-                ls -l $(Build.SourcesDirectory)/k8s/
-              displayName: 'List Files in k8s Directory'
+                ls -l $(Build.SourcesDirectory)/k8s/dev
+              displayName: 'List Files in k8s/dev Directory'
 
             - script: |
-                sed -i 's/__TAG__/$(tag)/g' $(deploymentFile)
-              displayName: 'Replace image tag in deployment file'
+                 find $(Build.SourcesDirectory)/k8s/dev -type f \( -name "*.yaml" -o -name "*.yml" \) -exec sed -i 's/__TAG__/$(tag)/g' {} +
+              displayName: 'Replace image tag in all deployment files'
 
             - task: Kubernetes@1
               displayName: Deploy to dev namespace in kubernetes
@@ -137,4 +158,4 @@ stages:
                 kubernetesCluster: $(aksClusterName)
                 namespace: $(kubernetesNamespace)
                 command: apply
-                arguments: '-f $(Build.SourcesDirectory)/k8s/.'
+                arguments: '-f $(Build.SourcesDirectory)/k8s/dev/.'

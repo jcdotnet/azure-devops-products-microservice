@@ -1,7 +1,8 @@
-﻿apiVersion: apps/v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: products-microservice-deployment
+  namespace: ecommerce-namespace
   labels:
     app: products-microservice
 spec:
@@ -16,7 +17,7 @@ spec:
     spec:
       containers:
       - name: products-microservice
-        image: jcdotnetecommerceregistry.azurecr.io/products-microservice:__TAG__
+        image: jcdotnetecommerceregistry.azurecr.io/products-microservice:latest
         ports:
         - containerPort: 8080
         env:
