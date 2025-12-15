@@ -46,26 +46,6 @@ variables:
     value: products-microservice
   - name: aksClusterName
     value: 'eCommerce-aks-cluster' 
-  - name: aksServiceConnectionName
-    value: 'dev-ecommerce-aks-cluster-dev-1765713468254'
-  - name: qaAksServiceConnectionName
-    value: 'qa-ecommerce-aks-cluster-qa-1765713656030'
-  - name: uatAksServiceConnectionName
-    value: 'uat-ecommerce-aks-cluster-uat-1765713748187'
-  - name: stagingAksServiceConnectionName
-    value: 'staging-ecommerce-aks-cluster-staging-1765713856428'
-  - name: prodAksServiceConnectionName
-    value: 'prod-ecommerce-aks-cluster-prod-1765713932420'
-  - name: kubernetesNamespace
-    value: 'dev'
-  - name: qaKubernetesNamespace
-    value: 'qa'
-  - name: uatKubernetesNamespace
-    value: 'uat'
-  - name: stagingKubernetesNamespace
-    value: 'staging'
-  - name: prodKubernetesNamespace
-    value: 'prod'
 
 stages:
 - stage: Build
@@ -131,6 +111,8 @@ stages:
   displayName: Deploy to Dev
   dependsOn: Test # only reaches here if the test stage is successful
   condition: and(succeeded('Build'), eq(variables['Build.SourceBranch'], 'refs/heads/dev'))
+  variables: 
+  - group: products-microservice-dev
   jobs:
   - deployment: DeploymentToDev
     displayName: Deployment to Dev Environment
@@ -154,8 +136,8 @@ stages:
             - task: Kubernetes@1
               displayName: Deploy to dev namespace in kubernetes
               inputs:
-                kubernetesServiceEndpoint: $(aksServiceConnectionName)
+                kubernetesServiceEndpoint: $(aks-service-connection-name)
                 kubernetesCluster: $(aksClusterName)
-                namespace: $(kubernetesNamespace)
+                namespace: $(kubernetes-namespace)
                 command: apply
                 arguments: '-f $(Build.SourcesDirectory)/k8s/dev/.'
