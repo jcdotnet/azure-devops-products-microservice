@@ -42,10 +42,10 @@ variables:
     value: 'ubuntu-latest'
   - name: windowsImageName
     value: 'windows-latest'
-  - name: imageRepository
-    value: products-microservice
   - name: aksClusterName
     value: 'eCommerce-aks-cluster' 
+  - name: aksServiceConnectionName
+    value: 'dev-ecommerce-aks-cluster-dev-1765713468254'
 
 stages:
 - stage: Build
@@ -136,7 +136,7 @@ stages:
             - task: Kubernetes@1
               displayName: Deploy to dev namespace in kubernetes
               inputs:
-                kubernetesServiceEndpoint: $(aks-service-connection-name)
+                kubernetesServiceEndpoint: $(aksServiceConnectionName)
                 kubernetesCluster: $(aksClusterName)
                 namespace: $(kubernetes-namespace)
                 command: apply
